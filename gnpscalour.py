@@ -17,7 +17,7 @@ class GNPS(Database):
         self.mzfield = 'parent mass'
         self.rtfield = 'RTMean'
 
-    def _find_close_annotation(self, mz, rt, mzerr=20, rterr=100):
+    def _find_close_annotation(self, mz, rt, mzerr=0.2, rterr=10):
         '''Find gnps annotations with mz,rt close enough to the requested mz,rt
 
         Parameters
@@ -76,5 +76,5 @@ class GNPS(Database):
         # open in a new tab, if possible
         new = 2
 
-        address = annotation['gnps_link']
+        address = annotation['gnps_link']+'&show=True'
         webbrowser.open(address, new=new)
