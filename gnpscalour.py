@@ -1,5 +1,6 @@
 import webbrowser
 from logging import getLogger
+from collections import defaultdict
 
 import numpy as np
 
@@ -78,3 +79,36 @@ class GNPS(Database):
 
         address = annotation['gnps_link']+'&show=True'
         webbrowser.open(address, new=new)
+
+    def get_feature_terms(self, features, exp=None):
+        '''Get list of gnps terms per feature.
+
+        Parameters
+        ----------
+        features : list of str
+            the features to get the terms for
+        exp : calour.Experiment (optional)
+            not None to store results inthe exp (to save time for multiple queries)
+
+        Returns
+        -------
+        feature_terms : dict of list of str/int
+            key is the feature, list contains all terms associated with the feature
+        '''
+        feature_terms = defaultdict(list)
+        for cfeature in features:
+            pos = self._find_close_annotation(self._exp.feature_metadata['MZ'][cfeature], self._exp.feature_metadata['RT'][cfeature])
+            cterms = []
+            foundna = False
+            for cpos in pos:
+                cterm = self.gnps_data.iloc[cpos]['LibraryID']
+                # pandas treats N/A as nan
+                if cterm == 'N/A' or not isinstance(cterm, str):
+                    foundna = True
+                    continue
+                cterms.append(cterm)
+            feature_terms[cfeature] = cterms
+            if len(cterms) == 0:
+                if foundna:
+                    feature_terms[cfeature] = ['na']
+        return feature_terms
