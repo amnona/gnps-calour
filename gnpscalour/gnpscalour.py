@@ -64,8 +64,7 @@ class GNPS(Database):
         '''
         shortdesc = []
         if self.gnps_data is None:
-            shortdesc = []
-            return
+            return []
         pos = self._find_close_annotation(self._exp.feature_metadata['MZ'][feature], self._exp.feature_metadata['RT'][feature])
         for cpos in pos:
             shortdesc.append(({'annotationtype': 'other', 'feature': feature, 'gnps_link': self.gnps_data.iloc[cpos]['ProteoSAFeClusterLink']}, str(self.gnps_data.iloc[cpos]['LibraryID'])))
