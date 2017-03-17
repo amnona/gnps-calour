@@ -13,7 +13,9 @@ class GNPS(Database):
     def __init__(self, exp=None):
         super().__init__(exp=exp, database_name='GNPS', methods=['get'])
         if '_calour_metabolomics_gnps_table' not in exp.exp_metadata:
-            raise ValueError('Cannot initialize GNPS database since gnps info file was not supplied. Please supply when loading ')
+            logger.warn('Cannot initialize GNPS database since gnps info file was not supplied. Please supply when loading')
+            self.gnps_data = None
+            return
         self.gnps_data = exp.exp_metadata['_calour_metabolomics_gnps_table']
         self.mzfield = 'parent mass'
         self.rtfield = 'RTMean'
@@ -61,6 +63,9 @@ class GNPS(Database):
                     a short summary of the annotation
         '''
         shortdesc = []
+        if self.gnps_data is None:
+            shortdesc = []
+            return
         pos = self._find_close_annotation(self._exp.feature_metadata['MZ'][feature], self._exp.feature_metadata['RT'][feature])
         for cpos in pos:
             shortdesc.append(({'annotationtype': 'other', 'feature': feature, 'gnps_link': self.gnps_data.iloc[cpos]['ProteoSAFeClusterLink']}, str(self.gnps_data.iloc[cpos]['LibraryID'])))
@@ -80,7 +85,7 @@ class GNPS(Database):
         address = annotation['gnps_link']+'&show=True'
         webbrowser.open(address, new=new)
 
-    def get_feature_terms(self, features, exp=None):
+    def get_feature_terms(self, features, exp=None, term_type=None):
         '''Get list of gnps terms per feature.
 
         Parameters
@@ -89,6 +94,7 @@ class GNPS(Database):
             the features to get the terms for
         exp : calour.Experiment (optional)
             not None to store results inthe exp (to save time for multiple queries)
+        term_type : not used
 
         Returns
         -------
