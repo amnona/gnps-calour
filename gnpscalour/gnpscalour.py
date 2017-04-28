@@ -20,7 +20,7 @@ class GNPS(Database):
         self.mzfield = 'parent mass'
         self.rtfield = 'RTMean'
 
-    def _find_close_annotation(self, mz, rt, mzerr=0.2, rterr=10):
+    def _find_close_annotation(self, mz, rt, mzerr=0.1, rterr=30):
         '''Find gnps annotations with mz,rt close enough to the requested mz,rt
 
         Parameters
@@ -84,7 +84,7 @@ class GNPS(Database):
         address = annotation['gnps_link']+'&show=True'
         webbrowser.open(address, new=new)
 
-    def get_feature_terms(self, features, exp=None, term_type=None):
+    def get_feature_terms(self, features, exp=None, term_type=None, ignore_exp=None):
         '''Get list of gnps terms per feature.
 
         Parameters
@@ -94,6 +94,7 @@ class GNPS(Database):
         exp : calour.Experiment (optional)
             not None to store results inthe exp (to save time for multiple queries)
         term_type : not used
+        ignore_exp : not used
 
         Returns
         -------
