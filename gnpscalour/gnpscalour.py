@@ -3,6 +3,7 @@ from logging import getLogger
 from collections import defaultdict
 
 import numpy as np
+import pandas as pd
 
 from calour.database import Database
 
@@ -19,6 +20,8 @@ class GNPS(Database):
         self.gnps_data = exp.exp_metadata['_calour_metabolomics_gnps_table']
         self.mzfield = 'parent mass'
         self.rtfield = 'RTMean'
+        self.gnps_data[self.mzfield] = pd.to_numeric(self.gnps_data[self.mzfield], errors='coerce')
+        self.gnps_data[self.rtfield] = pd.to_numeric(self.gnps_data[self.rtfield], errors='coerce')
 
     def _find_close_annotation(self, mz, rt, mzerr=0.1, rterr=30):
         '''Find gnps annotations with mz,rt close enough to the requested mz,rt
@@ -38,6 +41,7 @@ class GNPS(Database):
         -------
         list of close annotation indices
         '''
+        self.gnps_data.fillna(0,inplace=True)
         mzpos = np.where(np.abs(self.gnps_data[self.mzfield].values - mz) < mzerr)[0]
         rtpos = np.where(np.abs(self.gnps_data[self.rtfield] - rt) < rterr)[0]
         pos = np.intersect1d(mzpos, rtpos)
