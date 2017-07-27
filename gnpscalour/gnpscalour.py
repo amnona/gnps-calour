@@ -41,11 +41,17 @@ class GNPS(Database):
         -------
         list of close annotation indices
         '''
-        self.gnps_data.fillna(0,inplace=True)
-        mzpos = np.where(np.abs(self.gnps_data[self.mzfield].values - mz) < mzerr)[0]
-        rtpos = np.where(np.abs(self.gnps_data[self.rtfield] - rt) < rterr)[0]
-        pos = np.intersect1d(mzpos, rtpos)
-        return pos
+        try:
+            mz = float(mz)
+            rt = float(rt)
+            self.gnps_data.fillna(0,inplace=True)
+            mzpos = np.where(np.abs(self.gnps_data[self.mzfield].values - mz) < mzerr)[0]
+            rtpos = np.where(np.abs(self.gnps_data[self.rtfield] - rt) < rterr)[0]
+            pos = np.intersect1d(mzpos, rtpos)
+            return pos
+        except:
+            logger.warn('Cannot process GNPS for mz: %s, rt: %s' % (mz, rt))
+            return np.empty(0)
 
     def get_seq_annotation_strings(self, feature):
         '''Get nice string summaries of annotations for a given sequence
@@ -85,7 +91,9 @@ class GNPS(Database):
         # open in a new tab, if possible
         new = 2
 
-        address = annotation['gnps_link']+'&show=True'
+        link = annotation['gnps_link']+'&show=True'
+        logger.debug('opening link: %s' % link)
+        address = link
         webbrowser.open(address, new=new)
 
     def get_feature_terms(self, features, exp=None, term_type=None, ignore_exp=None):
