@@ -75,7 +75,10 @@ class GNPS(Database):
         shortdesc = []
         if self.gnps_data is None:
             return []
-        pos = self._find_close_annotation(self._exp.feature_metadata['MZ'][feature], self._exp.feature_metadata['RT'][feature])
+        # pos = self._find_close_annotation(self._exp.feature_metadata['MZ'][feature], self._exp.feature_metadata['RT'][feature])
+        pos = self._exp.feature_metadata['__calour_gnps_ids'][feature]
+        for clabel in ['parent mass', 'RTMean', 'LibraryID', 'AllOrganisms', 'componentindex']:
+            shortdesc.append(({'annotationtype': 'other', 'feature': feature, 'gnps_link': self.gnps_data.iloc[pos[0]]['ProteoSAFeClusterLink']}, '%s: %s' % (clabel, self.gnps_data.iloc[pos[0]][clabel])))
         for cpos in pos:
             shortdesc.append(({'annotationtype': 'other', 'feature': feature, 'gnps_link': self.gnps_data.iloc[cpos]['ProteoSAFeClusterLink']}, str(self.gnps_data.iloc[cpos]['LibraryID'])))
         return shortdesc
@@ -115,7 +118,8 @@ class GNPS(Database):
         '''
         feature_terms = defaultdict(list)
         for cfeature in features:
-            pos = self._find_close_annotation(self._exp.feature_metadata['MZ'][cfeature], self._exp.feature_metadata['RT'][cfeature])
+            # pos = self._find_close_annotation(self._exp.feature_metadata['MZ'][cfeature], self._exp.feature_metadata['RT'][cfeature])
+            pos = self._exp.feature_metadata['__calour_gnps_ids'][cfeature]
             cterms = []
             foundna = False
             for cpos in pos:
