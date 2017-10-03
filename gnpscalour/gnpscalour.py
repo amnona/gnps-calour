@@ -77,6 +77,8 @@ class GNPS(Database):
             return []
         # pos = self._find_close_annotation(self._exp.feature_metadata['MZ'][feature], self._exp.feature_metadata['RT'][feature])
         pos = self._exp.feature_metadata['__calour_gnps_ids'][feature]
+        if len(pos) == 0:
+            return []
         for clabel in ['parent mass', 'RTMean', 'LibraryID', 'AllOrganisms', 'componentindex']:
             shortdesc.append(({'annotationtype': 'other', 'feature': feature, 'gnps_link': self.gnps_data.iloc[pos[0]]['ProteoSAFeClusterLink']}, '%s: %s' % (clabel, self.gnps_data.iloc[pos[0]][clabel])))
         for cpos in pos:
