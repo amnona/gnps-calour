@@ -91,15 +91,39 @@ class GNPS(Database):
         Parameters
         ----------
         annotation : dict
-            should contain 'sequence'
+            should contain 'gnps_link'
         '''
         # open in a new tab, if possible
         new = 2
 
-        link = annotation['gnps_link']+'&show=True'
+        link = self.get_annotation_website(annotation)
+        if link is None:
+            logger.warning('GNPS link not found. not opening.')
+            return
         logger.debug('opening link: %s' % link)
-        address = link
-        webbrowser.open(address, new=new)
+        webbrowser.open(link, new=new)
+
+    def get_annotation_website(self, annotation):
+        '''Get the databasewebsite address of information about the annotation.
+
+        Parameters
+        ----------
+        annotation : dict
+            keys/values are database specific.
+            E.g. See dbBact REST API /annotations/get_annotation for keys / values
+
+
+        Returns
+        -------
+        str or None
+            The webaddress of the html page with details about the annotation,
+            or None if not available
+        '''
+        if 'gnps_link' not in annotation:
+            logger.warning('GNPS info does not contain gnps_link. It only contains: %s' % list(annotation.keys()))
+            return None
+        link = annotation['gnps_link']+'&show=True'
+        return link
 
     def get_feature_terms(self, features, exp=None, term_type=None, ignore_exp=None):
         '''Get list of gnps terms per feature.
