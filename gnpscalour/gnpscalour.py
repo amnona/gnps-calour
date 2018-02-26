@@ -76,7 +76,7 @@ class GNPS(Database):
         if self.gnps_data is None:
             return []
         # pos = self._find_close_annotation(self._exp.feature_metadata['MZ'][feature], self._exp.feature_metadata['RT'][feature])
-        pos = self._exp.feature_metadata['__calour_gnps_ids'][feature]
+        pos = self._exp.feature_metadata['gnps'][feature]
         if len(pos) == 0:
             return []
         for clabel in ['parent mass', 'RTMean', 'LibraryID', 'AllOrganisms', 'componentindex']:
@@ -145,7 +145,7 @@ class GNPS(Database):
         feature_terms = defaultdict(list)
         for cfeature in features:
             # pos = self._find_close_annotation(self._exp.feature_metadata['MZ'][cfeature], self._exp.feature_metadata['RT'][cfeature])
-            pos = self._exp.feature_metadata['__calour_gnps_ids'][cfeature]
+            pos = self._exp.feature_metadata['gnps'][cfeature]
             cterms = []
             foundna = False
             for cpos in pos:
