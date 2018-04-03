@@ -47,6 +47,7 @@ setup(name='gnps-calour',
       url='https://github.com/amnona/calour',
       test_suite='nose.collector',
       packages=find_packages(),
+      package_data={'gnpscalour': ['log.cfg']},
       install_requires=[
           'calour'],
       extras_require={'test': ["nose", "pep8", "flake8"],
