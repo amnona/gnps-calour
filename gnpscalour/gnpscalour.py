@@ -44,7 +44,7 @@ class GNPS(Database):
     def _prepare_gnps_ids(self, direct_ids=False, mz_thresh=0.02, rt_thresh=15, use_gnps_id_from_AllFiles=True):
         '''Link each feature in the experiment to the corresponding gnps table id.
 
-        Parameters  
+        Parameters
         ----------
         direct_ids: bool, optional
             True to link via the ids, False (default) to link via MZ/RT
@@ -106,7 +106,6 @@ class GNPS(Database):
             self.exp.add_terms_to_features('gnps', term_type='RTMean', use_term_list=None, field_name='RT')
         logger.debug('Added terms')
 
-
     def _find_close_annotation(self, mz, rt, mzerr=0.1, rterr=30):
         '''Find gnps annotations with mz,rt close enough to the requested mz,rt
 
@@ -128,7 +127,7 @@ class GNPS(Database):
         try:
             mz = float(mz)
             rt = float(rt)
-            self.gnps_data.fillna(0,inplace=True)
+            self.gnps_data.fillna(0, inplace=True)
             mzpos = np.where(np.abs(self.gnps_data[self.mzfield].values - mz) < mzerr)[0]
             rtpos = np.where(np.abs(self.gnps_data[self.rtfield] - rt) < rterr)[0]
             pos = np.intersect1d(mzpos, rtpos)
@@ -206,7 +205,7 @@ class GNPS(Database):
         if 'gnps_link' not in annotation:
             logger.warning('GNPS info does not contain gnps_link. It only contains: %s' % list(annotation.keys()))
             return None
-        link = annotation['gnps_link']+'&show=True'
+        link = annotation['gnps_link'] + '&show=True'
         return link
 
     def get_feature_terms(self, features, exp=None, term_type='LibraryID', ignore_exp=None):
@@ -227,8 +226,8 @@ class GNPS(Database):
 
         Returns
         -------
-        feature_terms : dict of list of str/int
-            key is the feature, list contains all terms associated with the feature
+        feature_terms: dict of dict of float
+            key is the feature, value is dict of key: gnps id, value is 1 (to be compatible with calour.database)
         '''
         if term_type not in self.gnps_data.columns:
             raise ValueError('term_type %s not a column in the gnps clusterinfo file.' % term_type)
@@ -236,7 +235,7 @@ class GNPS(Database):
         for cfeature in features:
             # pos = self._find_close_annotation(self._exp.feature_metadata['MZ'][cfeature], self._exp.feature_metadata['RT'][cfeature])
             pos = self._exp.feature_metadata['_gnps_ids'][cfeature]
-            cterms = []
+            cterms = {}
             foundna = False
             for cpos in pos:
                 cterm = self.gnps_data.iloc[cpos][term_type]
@@ -245,7 +244,7 @@ class GNPS(Database):
                 if cterm == 'N/A':
                     foundna = True
                     continue
-                cterms.append(cterm)
+                cterms[cterm] = 1
             feature_terms[cfeature] = cterms
             if len(cterms) == 0:
                 if foundna:
