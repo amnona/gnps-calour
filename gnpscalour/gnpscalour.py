@@ -9,6 +9,8 @@ import pandas as pd
 
 from calour.database import Database
 
+from . import __version_numeric__
+
 logger = getLogger(__name__)
 
 try:
@@ -30,16 +32,19 @@ except:
 class GNPS(Database):
     def __init__(self, exp=None):
         super().__init__(exp=exp, database_name='GNPS', methods=['get'])
-        if '_calour_metabolomics_gnps_table' not in exp.exp_metadata:
+        if 'gnpscalour' not in exp.databases:
             logger.warn('Cannot initialize GNPS database since gnps info file was not supplied. Please supply when loading')
             self.gnps_data = None
             return
-        self.gnps_data = exp.exp_metadata['_calour_metabolomics_gnps_table']
+        self.gnps_data = exp.databases['gnpscalour']['metabolomics_gnps_table']
         self.mzfield = 'parent mass'
         self.rtfield = 'RTMean'
         self.exp = exp
         self.gnps_data[self.mzfield] = pd.to_numeric(self.gnps_data[self.mzfield], errors='coerce')
         self.gnps_data[self.rtfield] = pd.to_numeric(self.gnps_data[self.rtfield], errors='coerce')
+
+    def version(self):
+        return __version_numeric__
 
     def _prepare_gnps_ids(self, direct_ids=False, mz_thresh=0.02, rt_thresh=15, use_gnps_id_from_AllFiles=True):
         '''Link each feature in the experiment to the corresponding gnps table id.
