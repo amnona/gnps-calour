@@ -9,7 +9,8 @@ import pandas as pd
 
 from calour.database import Database
 
-from . import __version_numeric__
+__version__ = '2020.07.12'
+__version_numeric__ = 2020.0712
 
 logger = getLogger(__name__)
 
@@ -32,11 +33,12 @@ except:
 class GNPS(Database):
     def __init__(self, exp=None):
         super().__init__(exp=exp, database_name='GNPS', methods=['get'])
-        if 'gnpscalour' not in exp.databases:
-            logger.warn('Cannot initialize GNPS database since gnps info file was not supplied. Please supply when loading')
-            self.gnps_data = None
-            return
-        self.gnps_data = exp.databases['gnpscalour']['metabolomics_gnps_table']
+        # if 'gnpscalour' not in exp.databases:
+        #     logger.warn('Cannot initialize GNPS database since gnps info file was not supplied. Please supply when loading')
+        #     self.gnps_data = None
+        #     return
+        # self.gnps_data = exp.databases['gnpscalour']['metabolomics_gnps_table']
+        self.gnps_data = exp.info['_calour_metabolomics_gnps_table']
         self.mzfield = 'parent mass'
         self.rtfield = 'RTMean'
         self.exp = exp
